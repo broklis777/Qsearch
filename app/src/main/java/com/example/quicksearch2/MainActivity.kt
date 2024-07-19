@@ -15,7 +15,8 @@ import androidx.appcompat.app.AppCompatActivity
 class MainActivity : AppCompatActivity() {
 
     lateinit var textInput: EditText
-    private val app_names = mutableListOf<String>()
+    private val appNames = mutableListOf<String>()
+    private val appPackageMap = mutableMapOf<String, String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,13 +38,17 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                val new_list_after_filter = findFragmentsInAppNames(app_names, s.toString())
-                if (new_list_after_filter.size != 1) {
+                val newListAfterFilter = findFragmentsInAppNames(appNames, s.toString())
+                if (newListAfterFilter.size != 1) {
                     // Show all apps
-                    Log.d("TAG", "All apps: $new_list_after_filter")
-                } else if (new_list_after_filter.isNotEmpty()) {
+                    Log.d("TAG", "All apps: $newListAfterFilter")
+                } else if (newListAfterFilter.isNotEmpty()) {
                     // Open the only app
-                    Log.d("TAG", "Open the only app: ${new_list_after_filter[0]}")
+                    val appName = newListAfterFilter[0]
+                    val packageName = appPackageMap[appName]
+                    if (packageName != null) {
+                        openApp(packageName)
+                    }
                 }
             }
         })
@@ -70,11 +75,21 @@ class MainActivity : AppCompatActivity() {
             .distinctBy { it.packageName }
 
         for (app in apps) {
-            val app_name = app.loadLabel(pm).toString()
-            app_names.add(app_name)
+            val appName = app.loadLabel(pm).toString()
+            appNames.add(appName)
+            appPackageMap[appName] = app.packageName
         }
 
         // Log the list of app names to verify they are being correctly populated
-        Log.d("TAG", "Installed apps: $app_names")
+        Log.d("TAG", "Installed apps: $appNames")
+    }
+
+    private fun openApp(packageName: String) {
+        val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
+        if (launchIntent != null) {
+            startActivity(launchIntent)
+        } else {
+            Log.d("TAG", "Unable to find launch intent for package: $packageName")
+        }
     }
 }
