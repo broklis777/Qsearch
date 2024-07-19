@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity() {
                     // Open the only app
                     val appName = newListAfterFilter[0]
                     val packageName = appPackageMap[appName]
+                    clearInputField()
                     if (packageName != null) {
                         openApp(packageName)
                     }
@@ -60,6 +61,12 @@ class MainActivity : AppCompatActivity() {
             imm.showSoftInput(textInput, InputMethodManager.SHOW_IMPLICIT)
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        clearInputField()
+    }
+
 
     private fun findFragmentsInAppNames(list: List<String>, fragment: String): List<String> {
         return list.filter { it.contains(fragment, ignoreCase = true) }
@@ -91,5 +98,9 @@ class MainActivity : AppCompatActivity() {
         } else {
             Log.d("TAG", "Unable to find launch intent for package: $packageName")
         }
+    }
+
+    private fun clearInputField() {
+        textInput.setText("")
     }
 }
