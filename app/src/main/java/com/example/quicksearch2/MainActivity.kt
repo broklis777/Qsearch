@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 class MainActivity : AppCompatActivity() {
 
     lateinit var textInput: EditText
+    private val app_names = mutableListOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +37,14 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                // No action needed after text changes
+                val new_list_after_filter = findFragmentsInAppNames(app_names, s.toString())
+                if (new_list_after_filter.size != 1) {
+                    // Show all apps
+                    Log.d("TAG", "All apps: $new_list_after_filter")
+                } else if (new_list_after_filter.isNotEmpty()) {
+                    // Open the only app
+                    Log.d("TAG", "Open the only app: ${new_list_after_filter[0]}")
+                }
             }
         })
 
@@ -48,20 +56,25 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun findFragmentsInAppNames(list: List<String>, fragment: String): List<String> {
+        return list.filter { it.contains(fragment, ignoreCase = true) }
+    }
+
     private fun listUserInstalledApps() {
         val pm: PackageManager = packageManager
         val intent = Intent(Intent.ACTION_MAIN, null)
         intent.addCategory(Intent.CATEGORY_LAUNCHER)
 
-        val apps: List<ApplicationInfo> = pm.queryIntentActivities(intent, 0)
+        val apps = pm.queryIntentActivities(intent, 0)
             .mapNotNull { resolveInfo -> resolveInfo.activityInfo.applicationInfo }
             .distinctBy { it.packageName }
-
-        val app_names = mutableListOf<String>()
 
         for (app in apps) {
             val app_name = app.loadLabel(pm).toString()
             app_names.add(app_name)
         }
+
+        // Log the list of app names to verify they are being correctly populated
+        Log.d("TAG", "Installed apps: $app_names")
     }
 }
