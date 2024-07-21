@@ -1,13 +1,14 @@
 package com.example.quicksearch2
 
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.Intent
-import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
@@ -25,6 +26,8 @@ class MainActivity : AppCompatActivity() {
         listUserInstalledApps()
 
         textInput = findViewById(R.id.textInput)
+
+        animateEditText()
 
         // Add TextWatcher to the EditText
         textInput.addTextChangedListener(object : TextWatcher {
@@ -65,8 +68,19 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         clearInputField()
+        animateEditText()
     }
 
+    private fun animateEditText() {
+        // Ensure the view is fully laid out before starting the animation
+        textInput.post {
+            textInput.scaleX = 0f
+            val scaleXAnimator = ObjectAnimator.ofFloat(textInput, "scaleX", 0f, 1f)
+            scaleXAnimator.duration = 500
+            scaleXAnimator.interpolator = AccelerateDecelerateInterpolator()
+            scaleXAnimator.start()
+        }
+    }
 
     private fun findFragmentsInAppNames(list: List<String>, fragment: String): List<String> {
         return list.filter { it.contains(fragment, ignoreCase = true) }

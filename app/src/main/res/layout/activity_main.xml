@@ -8,18 +8,22 @@
     tools:context=".MainActivity"
     android:background="#CCFFFFFF">
 
-
-<EditText
+    <EditText
+        style="@style/Widget.Material3.TextInputEditText.FilledBox"
+        android:background="@drawable/text_input_style"
         android:id="@+id/textInput"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="text"
         android:text=""
+        android:gravity="center"
+        android:hint="@string/start_typing"
+        android:padding="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.075" />
+        app:layout_constraintVertical_bias="0.075"
+        app:layout_constraintWidth_percent="0.8" />
 </androidx.constraintlayout.widget.ConstraintLayout>
